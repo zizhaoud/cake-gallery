@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画册管理 - 甜蜜时光蛋糕坊</title>
+    <style>
+        /* 基础样式 */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+        }
+        body { 
+            background-color: #f9f5f0; 
+            color: #5d4037; 
+            line-height: 1.6; 
+        }
+        
+        /* 头部样式 */
+        header { 
+            background: linear-gradient(135deg, #5d4037, #4a3429); 
+            color: #ffcdd2; 
+            text-align: center; 
+            padding: 2rem 1rem; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 0.5rem; 
+        }
+        .subtitle { 
+            font-size: 1.2rem; 
+            opacity: 0.8; 
+        }
+        
+        /* 主要内容区域 */
+        .management-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem 1rem; 
+        }
+        
+        /* 返回按钮 */
+        .back-btn {
+            background: #ffcdd2;
+            color: #5d4037;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #f8bbd0;
+            transform: translateX(-5px);
+        }
+        
+        /* 管理功能区域 */
+        .management-section {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .management-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffcdd2, #f8bbd0, #ffcdd2);
+        }
+
+        .management-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            position: relative;
+        }
+
+        .management-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #ffcdd2, #f8bbd0);
+        }
+
+        .management-header h2 {
+            color: #5d4037;
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .management-header p {
+            color: #8d6e63;
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .management-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border: 1px solid #f8f9fa;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .management-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffcdd2, #f8bbd0);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .management-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+        }
+
+        .management-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .management-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .management-card:hover .management-icon {
+            transform: scale(1.1);
+        }
+
+        .management-card h3 {
+            color: #5d4037;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .management-card p {
+            color: #8d6e63;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+            min-height: 40px;
+        }
+
+        .management-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #5d4037, #4a3429);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .management-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .management-btn:hover {
+            background: linear-gradient(135deg, #4a3429, #3d2b21);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.3);
+        }
+
+        .management-btn:hover::before {
+            left: 100%;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1%, transparent 1%);
+            background-size: 20px 20px;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-20px, -20px) rotate(360deg); }
+        }
+
+        .stats-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .stats-section p {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-btn-large {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.5);
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-btn-large:hover {
+            background: white;
+            color: #4CAF50;
+            border-color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.3);
+        }
+
+        /* 页脚 */
+        footer { 
+            text-align: center; 
+            padding: 2rem; 
+            background-color: #5d4037; 
+            color: #ffcdd2; 
+            margin-top: 2rem; 
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .management-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .management-section {
+                padding: 2rem 1.5rem;
+                margin-top: 2rem;
+            }
+            
+            .management-card {
+                padding: 1.5rem 1rem;
+            }
+            
+            .stats-section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .management-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .management-section {
+                padding: 1.5rem 1rem;
+            }
+            
+            .management-card {
+                padding: 1.2rem 0.8rem;
+            }
+            
+            .stats-section {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        /* 模态框样式 */
+        .password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 102;
+            justify-content: center;
+            align-items: center;
+        }
+        .password-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .password-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        .save-btn, .cancel-btn, .delete-confirm-btn, .stats-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .save-btn {
+            background: #ffcdd2;
+            color: #5d4037;
+        }
+        .cancel-btn {
+            background: #ddd;
+            color: #666;
+        }
+        .delete-confirm-btn {
+            background: #e91e63;
+            color: white;
+        }
+        .stats-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        /* 清理数据模态框 */
+        .cleanup-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 103;
+            justify-content: center;
+            align-items: center;
+        }
+        .cleanup-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .cleanup-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .cleanup-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .cleanup-item:last-child {
+            border-bottom: none;
+        }
+        .cleanup-item input {
+            margin-right: 10px;
+        }
+        .cleanup-item-info {
+            flex: 1;
+        }
+        .cleanup-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .cleanup-item-details {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* 统计模态框 */
+        .stats-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 104;
+            justify-content: center;
+            align-items: center;
+        }
+        .stats-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .stat-card {
+            background: #f9f5f0;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e91e63;
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #8d6e63;
+        }
+        .stats-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .stats-item:last-child {
+            border-bottom: none;
+        }
+        .stats-item-name {
+            font-weight: bold;
+            flex: 1;
+        }
+        .stats-item-views {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        .popular-tag {
+            background: #ff9800;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>甜蜜时光蛋糕坊 - 画册管理</h1>
+        <p class="subtitle">专业管理工具，保护您的数据安全</p>
+    </header>
+    
+    <div class="management-container">
+        <button class="back-btn" onclick="gotoMainPage()">← 返回画册浏览</button>
+        
+        <!-- 管理功能区域 -->
+        <div class="management-section">
+            <div class="management-header">
+                <h2>📊 画册管理系统</h2>
+                <p>高级管理功能，保护您的数据安全，确保画册内容完整有序</p>
+            </div>
+            
+            <div class="management-grid">
+                <div class="management-card">
+                    <div class="management-icon">📤</div>
+                    <h3>导入数据</h3>
+                    <p>从备份文件恢复蛋糕数据，快速重建画册内容</p>
+                    <button class="management-btn" onclick="showPasswordModal('import')">导入数据</button>
+                </div>
+                
+                <div class="management-card">
+                    <div class="management-icon">📥</div>
+                    <h3>导出数据</h3>
+                    <p>备份所有蛋糕数据到本地，防止意外数据丢失</p>
+                    <button class="management-btn" onclick="showPasswordModal('export')">导出数据</button>
+                </div>
+                
+                <div class="management-card">
+                    <div class="management-icon">🔄</div>
+                    <h3>重置图册</h3>
+                    <p>恢复图册到初始状态，清除所有自定义内容</p>
+                    <button class="management-btn" onclick="showPasswordModal('reset')">重置图册</button>
+                </div>
+                
+                <div class="management-card">
+                    <div class="management-icon">🗑️</div>
+                    <h3>清理图册</h3>
+                    <p>批量删除不需要的蛋糕，保持画册整洁有序</p>
+                    <button class="management-btn" onclick="showPasswordModal('cleanup')">清理图册</button>
+                </div>
+            </div>
+            
+            <div class="stats-section">
+                <h3>📈 查看蛋糕浏览统计</h3>
+                <p>深入了解顾客喜好，查看各蛋糕的浏览量数据，优化产品展示策略</p>
+                <button class="stats-btn-large" onclick="showPasswordModal('stats')">查看详细统计</button>
+            </div>
+            
+            <input type="file" id="dataImport" accept=".json" style="display: none;">
+        </div>
+    </div>
+
+    <!-- 密码确认模态框 -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-form">
+            <h3>请输入管理密码</h3>
+            <input type="password" class="password-input" id="passwordInput" placeholder="输入密码">
+            <div class="form-buttons">
+                <button class="cancel-btn" id="cancelPassword">取消</button>
+                <button class="save-btn" id="confirmPassword">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 清理数据模态框 -->
+    <div class="cleanup-modal" id="cleanupModal">
+        <div class="cleanup-form">
+            <h3>清理数据</h3>
+            <p>请选择要删除的蛋糕（勾选后点击确认删除）：</p>
+            <div class="cleanup-list" id="cleanupList">
+                <!-- 清理列表将通过JavaScript动态生成 -->
+            </div>
+            <div class="form-buttons">
+                <button class="cancel-btn" id="cancelCleanup">取消</button>
+                <button class="delete-confirm-btn" id="confirmCleanup">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统计模态框 -->
+    <div class="stats-modal" id="statsModal">
+        <div class="stats-form">
+            <h3>蛋糕浏览统计</h3>
+            <div class="stats-summary" id="statsSummary">
+                <!-- 统计摘要将通过JavaScript动态生成 -->
+            </div>
+            <h4>详细浏览数据</h4>
+            <div class="stats-list" id="statsList">
+                <!-- 统计列表将通过JavaScript动态生成 -->
+            </div>
+            <div class="form-buttons">
+                <button class="cancel-btn" id="cancelStats">关闭</button>
+                <button class="stats-btn" onclick="resetStats()">重置统计</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>甜蜜时光蛋糕坊 &copy; 2023 | 地址：XX市XX区XX路XX号 | 电话：123-4567-8900</p>
+    </footer>
+
+    <script>
+        // 跳转到主页面
+        function gotoMainPage() {
+            window.location.href = 'index.html';
+        }
+
+        // 初始化蛋糕数据
+        let cakes = [];
+        let currentAction = null;
+        const ADMIN_PASSWORD = "123456"; // 统一管理密码
+
+        // 从本地存储加载数据
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('cakeCatalogData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                cakes = data.cakes || data; // 兼容旧版本数据
+                
+                // 初始化浏览量数据（兼容旧版本）
+                cakes.forEach(cake => {
+                    if (!cake.views) {
+                        cake.views = 0;
+                    }
+                });
+                saveToLocalStorage();
+            } else {
+                // 默认数据
+                cakes = [
+                    {
+                        id: 1,
+                        name: "草莓奶油蛋糕",
+                        category: "birthday",
+                        price: "¥168",
+                        description: "新鲜草莓与香甜奶油的完美结合，口感清新不腻",
+                        images: ["images/cake1.jpg"],
+                        views: 0
+                    },
+                    {
+                        id: 2,
+                        name: "巧克力熔岩蛋糕",
+                        category: "dessert",
+                        price: "¥98",
+                        description: "外层松软，内里流心，浓郁巧克力风味",
+                        images: ["images/cake2.jpg"],
+                        views: 0
+                    },
+                    {
+                        id: 3,
+                        name: "三层婚礼蛋糕",
+                        category: "wedding",
+                        price: "¥888",
+                        description: "精致优雅的设计，象征永恒的爱情",
+                        images: ["images/cake3.jpg"],
+                        views: 0
+                    }
+                ];
+                saveToLocalStorage();
+            }
+        }
+
+        // 保存到本地存储
+        function saveToLocalStorage() {
+            localStorage.setItem('cakeCatalogData', JSON.stringify({ cakes, version: '2.0' }));
+        }
+
+        // 显示密码模态框
+        function showPasswordModal(action) {
+            currentAction = action;
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordInput').focus();
+        }
+
+        // 密码验证
+        function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('passwordModal').style.display = 'none';
+                executeAction();
+            } else {
+                alert('密码错误！');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        // 执行管理操作
+        function executeAction() {
+            switch(currentAction) {
+                case 'export':
+                    exportData();
+                    break;
+                case 'import':
+                    document.getElementById('dataImport').click();
+                    break;
+                case 'reset':
+                    resetData();
+                    break;
+                case 'cleanup':
+                    showCleanupModal();
+                    break;
+                case 'stats':
+                    showStatsModal();
+                    break;
+            }
+        }
+
+        // 显示清理数据模态框
+        function showCleanupModal() {
+            const cleanupList = document.getElementById('cleanupList');
+            cleanupList.innerHTML = '';
+            
+            cakes.forEach(cake => {
+                const cleanupItem = document.createElement('div');
+                cleanupItem.className = 'cleanup-item';
+                cleanupItem.innerHTML = `
+                    <input type="checkbox" id="cleanup-${cake.id}" value="${cake.id}">
+                    <div class="cleanup-item-info">
+                        <div class="cleanup-item-name">${cake.name}</div>
+                        <div class="cleanup-item-details">
+                            分类: ${getCategoryName(cake.category)} | 价格: ${cake.price} | 
+                            浏览量: ${cake.views || 0} | 图片数量: ${cake.images ? cake.images.length : 0}
+                        </div>
+                    </div>
+                `;
+                cleanupList.appendChild(cleanupItem);
+            });
+            
+            document.getElementById('cleanupModal').style.display = 'flex';
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const categoryNames = {
+                'birthday': '生日蛋糕',
+                'wedding': '婚礼蛋糕',
+                'dessert': '甜点蛋糕',
+                'seasonal': '季节限定'
+            };
+            return categoryNames[category] || category;
+        }
+
+        // 确认清理数据
+        function confirmCleanup() {
+            const checkboxes = document.querySelectorAll('#cleanupList input[type="checkbox"]:checked');
+            const idsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            if (idsToDelete.length === 0) {
+                alert('请选择要删除的蛋糕！');
+                return;
+            }
+            
+            if (confirm(`确定要删除选中的 ${idsToDelete.length} 个蛋糕吗？此操作不可撤销！`)) {
+                cakes = cakes.filter(cake => !idsToDelete.includes(cake.id));
+                saveToLocalStorage();
+                document.getElementById('cleanupModal').style.display = 'none';
+                alert(`成功删除 ${idsToDelete.length} 个蛋糕！`);
+            }
+        }
+
+        // 导出数据
+        function exportData() {
+            const dataStr = JSON.stringify({ cakes, version: '2.0' }, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'cake-catalog-backup.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            alert('数据导出成功！');
+        }
+
+        // 导入数据
+        document.getElementById('dataImport').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        if (Array.isArray(importedData)) {
+                            // 兼容旧版本数据
+                            cakes = importedData;
+                        } else if (importedData.cakes) {
+                            // 新版本数据
+                            cakes = importedData.cakes;
+                        } else {
+                            alert('文件格式不正确！');
+                            return;
+                        }
+                        
+                        // 初始化浏览量数据
+                        cakes.forEach(cake => {
+                            if (!cake.views) {
+                                cake.views = 0;
+                            }
+                        });
+                        
+                        saveToLocalStorage();
+                        alert('数据导入成功！');
+                    } catch (error) {
+                        alert('文件读取失败！');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // 重置数据
+        function resetData() {
+            if (confirm('确定要重置所有数据吗？这将清除所有自定义的蛋糕信息和统计！')) {
+                localStorage.removeItem('cakeCatalogData');
+                loadFromLocalStorage();
+                alert('数据已重置！');
+            }
+        }
+
+        // 显示统计模态框
+        function showStatsModal() {
+            // 计算统计摘要
+            const totalViews = cakes.reduce((sum, cake) => sum + (cake.views || 0), 0);
+            const totalCakes = cakes.length;
+            const avgViews = totalCakes > 0 ? Math.round(totalViews / totalCakes) : 0;
+            const mostPopular = cakes.reduce((max, cake) => 
+                (cake.views || 0) > (max.views || 0) ? cake : max, cakes[0]);
+            
+            // 更新统计摘要
+            const statsSummary = document.getElementById('statsSummary');
+            statsSummary.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${totalCakes}</div>
+                    <div class="stat-label">蛋糕总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${totalViews}</div>
+                    <div class="stat-label">总浏览量</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${avgViews}</div>
+                    <div class="stat-label">平均浏览量</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${mostPopular ? mostPopular.views : 0}</div>
+                    <div class="stat-label">最高浏览量</div>
+                </div>
+            `;
+            
+            // 更新详细统计列表
+            const statsList = document.getElementById('statsList');
+            statsList.innerHTML = '';
+            
+            // 按浏览量排序
+            const sortedCakes = [...cakes].sort((a, b) => (b.views || 0) - (a.views || 0));
+            
+            sortedCakes.forEach((cake, index) => {
+                const statsItem = document.createElement('div');
+                statsItem.className = 'stats-item';
+                const isPopular = index < 3 && cake.views > 0; // 前三名标记为热门
+                statsItem.innerHTML = `
+                    <div class="stats-item-name">
+                        ${cake.name}
+                        ${isPopular ? '<span class="popular-tag">热门</span>' : ''}
+                    </div>
+                    <div class="stats-item-views">${cake.views || 0} 次浏览</div>
+                `;
+                statsList.appendChild(statsItem);
+            });
+            
+            document.getElementById('statsModal').style.display = 'flex';
+        }
+
+        // 重置统计
+        function resetStats() {
+            if (confirm('确定要重置所有浏览量统计吗？此操作不可撤销！')) {
+                cakes.forEach(cake => {
+                    cake.views = 0;
+                });
+                saveToLocalStorage();
+                showStatsModal(); // 刷新统计显示
+                alert('浏览量统计已重置！');
+            }
+        }
+
+        // 初始化管理页面
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromLocalStorage();
+            
+            const passwordModal = document.getElementById('passwordModal');
+            const cancelPassword = document.getElementById('cancelPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const cleanupModal = document.getElementById('cleanupModal');
+            const cancelCleanup = document.getElementById('cancelCleanup');
+            const confirmCleanup = document.getElementById('confirmCleanup');
+            const statsModal = document.getElementById('statsModal');
+            const cancelStats = document.getElementById('cancelStats');
+
+            // 取消密码输入
+            cancelPassword.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+                currentAction = null;
+            });
+
+            // 确认密码
+            confirmPassword.addEventListener('click', verifyPassword);
+            
+            // 取消清理
+            cancelCleanup.addEventListener('click', function() {
+                cleanupModal.style.display = 'none';
+            });
+
+            // 确认清理
+            confirmCleanup.addEventListener('click', confirmCleanup);
+
+            // 取消统计
+            cancelStats.addEventListener('click', function() {
+                statsModal.style.display = 'none';
+            });
+            
+            // 点击密码模态窗口外部关闭
+            passwordModal.addEventListener('click', function(e) {
+                if (e.target === passwordModal) {
+                    passwordModal.style.display = 'none';
+                    currentAction = null;
+                }
+            });
+
+            // 点击清理模态窗口外部关闭
+            cleanupModal.addEventListener('click', function(e) {
+                if (e.target === cleanupModal) {
+                    cleanupModal.style.display = 'none';
+                }
+            });
+
+            // 点击统计模态窗口外部关闭
+            statsModal.addEventListener('click', function(e) {
+                if (e.target === statsModal) {
+                    statsModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>甜蜜时光蛋糕坊 | 蛋糕画册</title>
+    <style>
+        /* 基础样式 */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+        }
+        body { 
+            background-color: #f9f5f0; 
+            color: #5d4037; 
+            line-height: 1.6; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 头部样式 */
+        header { 
+            background: linear-gradient(135deg, #ffcdd2, #f8bbd0); 
+            color: #5d4037; 
+            text-align: center; 
+            padding: 2rem 1rem; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 0.5rem; 
+        }
+        .subtitle { 
+            font-size: 1.2rem; 
+            opacity: 0.8; 
+        }
+        
+        /* 时间显示样式 */
+        .time-display {
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #5d4037;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #currentDate {
+            font-weight: 600;
+            padding-right: 1rem;
+            border-right: 1px solid rgba(93, 64, 55, 0.3);
+        }
+
+        #currentTime {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            background: linear-gradient(135deg, #e91e63, #ffcdd2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.1rem;
+        }
+
+        /* 主要内容区域 */
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem 1rem; 
+            flex: 1;
+        }
+        
+        /* 筛选按钮 */
+        .filter-buttons { 
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin-bottom: 2rem; 
+        }
+        .filter-btn { 
+            background-color: #fff; 
+            border: 2px solid #ffcdd2; 
+            color: #5d4037; 
+            padding: 10px 20px; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .filter-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 205, 210, 0.3);
+        }
+        .filter-btn.active { 
+            background-color: #ffcdd2; 
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 205, 210, 0.4);
+        }
+        
+        /* 网格容器 */
+        .gallery-container {
+            position: relative;
+            width: 100%;
+        }
+
+        /* 蛋糕展示网格 */
+        .gallery { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 25px; 
+            margin-bottom: 3rem;
+            width: 100%;
+            align-items: start;
+            transition: opacity 0.3s ease;
+        }
+        
+        /* 蛋糕卡片 */
+        .cake-card { 
+            background-color: #fff; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+            transition: all 0.3s ease; 
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .cake-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .cake-image-container {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .cake-image { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            cursor: pointer; 
+            transition: transform 0.3s ease;
+        }
+        .cake-card:hover .cake-image {
+            transform: scale(1.05);
+        }
+        .image-count {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+        }
+        .view-count {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            backdrop-filter: blur(10px);
+        }
+        .cake-info { 
+            padding: 1.2rem; 
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .cake-name { 
+            font-size: 1.3rem; 
+            margin-bottom: 0.5rem; 
+            font-weight: 600;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.6em;
+        }
+        .cake-description { 
+            font-size: 0.9rem; 
+            color: #8d6e63; 
+            margin-bottom: 1rem; 
+            line-height: 1.5;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 4.5em;
+        }
+        .cake-price { 
+            font-weight: bold; 
+            color: #e91e63; 
+            font-size: 1.2rem; 
+            text-align: right;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+        
+        /* 编辑按钮 */
+        .edit-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .cake-card:hover .edit-btn {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        /* 删除按钮 */
+        .delete-btn {
+            position: absolute;
+            top: 62px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            color: #e91e63;
+        }
+        .cake-card:hover .delete-btn {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* 上传卡片 - 新的样式 */
+        .upload-card {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 2px dashed #ffcdd2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .upload-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 205, 210, 0.3);
+            border-color: #f8bbd0;
+            background: linear-gradient(135deg, #ffffff, #fefefe);
+        }
+
+        .upload-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #ffcdd2;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-card:hover .upload-icon {
+            transform: scale(1.1);
+            color: #f8bbd0;
+        }
+
+        .upload-card h3 {
+            color: #5d4037;
+            margin-bottom: 0.8rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .upload-card p {
+            color: #8d6e63;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .upload-card-btn {
+            background: linear-gradient(135deg, #ffcdd2, #f8bbd0);
+            color: #5d4037;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 205, 210, 0.4);
+        }
+
+        /* 空状态卡片 */
+        .empty-card {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 2px dashed #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-card h3 {
+            color: #8d6e63;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .empty-card p {
+            color: #8d6e63;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* 图片放大模态框 */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.95); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .modal-content { 
+            max-width: 90%; 
+            max-height: 90%; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .close-btn { 
+            position: absolute; 
+            top: 25px; 
+            right: 35px; 
+            color: white; 
+            font-size: 45px; 
+            cursor: pointer; 
+            z-index: 1001;
+            transition: color 0.3s ease;
+        }
+        .close-btn:hover {
+            color: #ffcdd2;
+        }
+        
+        /* 多图浏览控制 */
+        .image-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            z-index: 1001;
+        }
+        .image-nav {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #5d4037;
+        }
+        .image-nav:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+        .image-indicators {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .image-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .image-indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        
+        /* 编辑模态框 */
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .edit-form {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .edit-form h3 {
+            color: #5d4037;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #5d4037;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #ffcdd2;
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .image-upload-group {
+            border: 2px dashed #ddd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+        .image-upload-group:hover {
+            border-color: #ffcdd2;
+        }
+        .image-preview {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .image-preview-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #f0f0f0;
+        }
+        .remove-image {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .save-btn, .cancel-btn, .delete-confirm-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .save-btn {
+            background: #ffcdd2;
+            color: #5d4037;
+        }
+        .save-btn:hover {
+            background: #f8bbd0;
+            transform: translateY(-2px);
+        }
+        .cancel-btn {
+            background: #f0f0f0;
+            color: #666;
+        }
+        .cancel-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        .delete-confirm-btn {
+            background: #e91e63;
+            color: white;
+        }
+        .delete-confirm-btn:hover {
+            background: #d81b60;
+            transform: translateY(-2px);
+        }
+        
+        /* 页脚 */
+        footer { 
+            text-align: center; 
+            padding: 2rem; 
+            background-color: #5d4037; 
+            color: #ffcdd2; 
+            margin-top: auto;
+        }
+        
+        /* 响应式设计 */
+        @media (min-width: 1400px) {
+            .gallery {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 1100px) and (max-width: 1399px) {
+            .gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1099px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .cake-image-container {
+                height: 200px;
+            }
+            
+            .filter-buttons {
+                gap: 8px;
+            }
+            
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .edit-form {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            
+            .upload-card {
+                padding: 1.5rem;
+                min-height: 250px;
+            }
+        }
+
+        /* 管理入口按钮 */
+        .management-entrance {
+            text-align: center;
+            margin: 3rem 0;
+            padding: 2rem;
+        }
+
+        .management-entrance-btn {
+            background: linear-gradient(135deg, #5d4037, #4a3429);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(93, 64, 55, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .management-entrance-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(93, 64, 55, 0.4);
+            background: linear-gradient(135deg, #4a3429, #3d2b21);
+        }
+
+        /* 密码模态框 */
+        .password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .password-form {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .password-form h3 {
+            color: #5d4037;
+            margin-bottom: 1.5rem;
+        }
+        .password-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .password-input:focus {
+            outline: none;
+            border-color: #ffcdd2;
+        }
+
+        /* 隐藏的文件输入 */
+        #imageUpload {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>甜蜜时光蛋糕坊</h1>
+        <p class="subtitle">每一口都是幸福的味道</p>
+        <!-- 添加实时时间显示 -->
+        <div class="time-display">
+            <span id="currentDate"></span>
+            <span id="currentTime"></span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 移除原来的上传区域 -->
+        
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">全部蛋糕</button>
+            <button class="filter-btn" data-filter="birthday">生日蛋糕</button>
+            <button class="filter-btn" data-filter="wedding">婚礼蛋糕</button>
+            <button class="filter-btn" data-filter="dessert">甜点蛋糕</button>
+            <button class="filter-btn" data-filter="seasonal">季节限定</button>
+        </div>
+        
+        <!-- 网格容器 -->
+        <div class="gallery-container">
+            <div class="gallery" id="cakeGallery">
+                <!-- 蛋糕卡片和上传卡片将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 管理入口 -->
+        <div class="management-entrance">
+            <button class="management-entrance-btn" onclick="gotoManagementPage()">
+                🛠️ 进入画册管理系统
+            </button>
+        </div>
+    </div>
+    
+    <!-- 图片放大模态框 -->
+    <div class="modal" id="imageModal">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div class="image-controls">
+            <button class="image-nav" id="prevImage">❮</button>
+            <div class="image-indicators" id="imageIndicators"></div>
+            <button class="image-nav" id="nextImage">❯</button>
+        </div>
+    </div>
+    
+    <!-- 编辑模态框 -->
+    <div class="edit-modal" id="editModal">
+        <div class="edit-form">
+            <h3>编辑蛋糕信息</h3>
+            <div class="form-group">
+                <label for="editName">蛋糕名称</label>
+                <input type="text" id="editName" placeholder="输入蛋糕名称">
+            </div>
+            <div class="form-group">
+                <label for="editCategory">分类</label>
+                <select id="editCategory">
+                    <option value="birthday">生日蛋糕</option>
+                    <option value="wedding">婚礼蛋糕</option>
+                    <option value="dessert">甜点蛋糕</option>
+                    <option value="seasonal">季节限定</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editPrice">价格</label>
+                <input type="text" id="editPrice" placeholder="例如：¥168">
+            </div>
+            <div class="form-group">
+                <label for="editDescription">描述</label>
+                <textarea id="editDescription" placeholder="输入蛋糕描述"></textarea>
+            </div>
+            <div class="form-group">
+                <label>蛋糕图片（最多3张）</label>
+                <div class="image-upload-group">
+                    <input type="file" id="editImageUpload" accept="image/*" multiple style="display: none;">
+                    <button type="button" class="upload-card-btn" onclick="document.getElementById('editImageUpload').click()">
+                        📁 添加图片
+                    </button>
+                    <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">点击添加更多图片，最多3张</p>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+            </div>
+            <div class="form-buttons">
+                <button class="cancel-btn" id="cancelEdit">取消</button>
+                <button class="save-btn" id="saveEdit">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 删除确认模态框 -->
+    <div class="edit-modal" id="deleteModal">
+        <div class="edit-form">
+            <h3>确认删除</h3>
+            <p>您确定要删除这个蛋糕吗？此操作不可撤销。</p>
+            <div class="form-buttons">
+                <button class="cancel-btn" id="cancelDelete">取消</button>
+                <button class="delete-confirm-btn" id="confirmDelete">确认删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 密码确认模态框 -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-form">
+            <h3>请输入管理密码</h3>
+            <input type="password" class="password-input" id="passwordInput" placeholder="输入密码">
+            <div class="form-buttons">
+                <button class="cancel-btn" id="cancelPassword">取消</button>
+                <button class="save-btn" id="confirmPassword">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>甜蜜时光蛋糕坊 &copy; 2023 | 地址：XX市XX区XX路XX号 | 电话：123-4567-8900</p>
+    </footer>
+
+    <!-- 隐藏的文件输入 -->
+    <input type="file" id="imageUpload" accept="image/*" multiple>
+
+    <script>
+        // 更新实时时间
+        function updateDateTime() {
+            const now = new Date();
+            
+            // 格式化日期
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const weekday = weekdays[now.getDay()];
+            
+            // 格式化时间
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            // 更新显示
+            const dateElement = document.getElementById('currentDate');
+            const timeElement = document.getElementById('currentTime');
+            
+            if (dateElement) {
+                dateElement.textContent = `${year}年${month}月${day}日 ${weekday}`;
+            }
+            
+            if (timeElement) {
+                timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+
+        // 初始化时间显示
+        function initDateTime() {
+            updateDateTime();
+            // 每秒更新一次时间
+            setInterval(updateDateTime, 1000);
+        }
+
+        // 跳转到管理页面
+        function gotoManagementPage() {
+            window.location.href = 'management.html';
+        }
+
+        // 初始化蛋糕数据
+        let cakes = [];
+        let currentEditId = null;
+        let currentDeleteId = null;
+        let currentAction = null;
+        let currentViewingImages = [];
+        let currentImageIndex = 0;
+        const ADMIN_PASSWORD = "123456"; // 统一管理密码
+
+        // 从本地存储加载数据
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('cakeCatalogData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    cakes = data.cakes || data; // 兼容旧版本数据
+                    
+                    // 初始化浏览量数据（兼容旧版本）
+                    cakes.forEach(cake => {
+                        if (!cake.views) {
+                            cake.views = 0;
+                        }
+                        // 确保每个蛋糕都有images数组
+                        if (!cake.images) {
+                            cake.images = [];
+                        }
+                    });
+                    saveToLocalStorage();
+                } catch (error) {
+                    console.error('加载数据失败:', error);
+                    initializeDefaultData();
+                }
+            } else {
+                initializeDefaultData();
+            }
+        }
+
+        // 初始化默认数据
+        function initializeDefaultData() {
+            cakes = [
+                {
+                    id: 1,
+                    name: "草莓奶油蛋糕",
+                    category: "birthday",
+                    price: "¥168",
+                    description: "新鲜草莓与香甜奶油的完美结合，口感清新不腻",
+                    images: [],
+                    views: 0
+                },
+                {
+                    id: 2,
+                    name: "巧克力熔岩蛋糕",
+                    category: "dessert",
+                    price: "¥98",
+                    description: "外层松软，内里流心，浓郁巧克力风味",
+                    images: [],
+                    views: 0
+                },
+                {
+                    id: 3,
+                    name: "三层婚礼蛋糕",
+                    category: "wedding",
+                    price: "¥888",
+                    description: "精致优雅的设计，象征永恒的爱情",
+                    images: [],
+                    views: 0
+                }
+            ];
+            saveToLocalStorage();
+        }
+
+        // 保存到本地存储
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('cakeCatalogData', JSON.stringify({ 
+                    cakes, 
+                    version: '2.0',
+                    lastUpdated: new Date().toISOString()
+                }));
+            } catch (error) {
+                console.error('保存数据失败:', error);
+                alert('保存数据失败，请检查存储空间');
+            }
+        }
+
+        // 增加蛋糕浏览量
+        function incrementViewCount(cakeId) {
+            const cake = cakes.find(c => c.id === cakeId);
+            if (cake) {
+                cake.views = (cake.views || 0) + 1;
+                saveToLocalStorage();
+                // 更新显示的浏览量
+                updateViewCountDisplay(cakeId);
+            }
+        }
+
+        // 更新浏览量显示
+        function updateViewCountDisplay(cakeId) {
+            const cake = cakes.find(c => c.id === cakeId);
+            if (cake) {
+                const viewElement = document.querySelector(`.cake-card[data-id="${cakeId}"] .view-count`);
+                if (viewElement) {
+                    viewElement.innerHTML = `👁️ ${cake.views}`;
+                }
+            }
+        }
+
+        // 显示密码模态框
+        function showPasswordModal(action) {
+            currentAction = action;
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordInput').focus();
+        }
+
+        // 密码验证
+        function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('passwordModal').style.display = 'none';
+                executeAction();
+            } else {
+                alert('密码错误！');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        // 执行管理操作
+        function executeAction() {
+            switch(currentAction) {
+                case 'upload':
+                    document.getElementById('imageUpload').click();
+                    break;
+                case 'edit':
+                    openEditModal(currentEditId);
+                    break;
+                case 'delete':
+                    openDeleteModal(currentDeleteId);
+                    break;
+            }
+        }
+
+        // 打开编辑模态框
+        function openEditModal(cakeId) {
+            const cake = cakes.find(c => c.id === cakeId);
+            if (cake) {
+                currentEditId = cakeId;
+                document.getElementById('editName').value = cake.name;
+                document.getElementById('editCategory').value = cake.category;
+                document.getElementById('editPrice').value = cake.price;
+                document.getElementById('editDescription').value = cake.description;
+                
+                // 显示图片预览
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.innerHTML = '';
+                if (cake.images && cake.images.length > 0) {
+                    cake.images.forEach((image, index) => {
+                        addImagePreview(image, index);
+                    });
+                }
+                
+                document.getElementById('editModal').style.display = 'flex';
+            }
+        }
+
+        // 打开删除确认模态框
+        function openDeleteModal(cakeId) {
+            currentDeleteId = cakeId;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        // 添加图片预览
+        function addImagePreview(imageSrc, index) {
+            const imagePreview = document.getElementById('imagePreview');
+            const previewItem = document.createElement('div');
+            previewItem.className = 'image-preview-item';
+            previewItem.innerHTML = `
+                <img src="${imageSrc}" alt="预览图片">
+                <button type="button" class="remove-image" data-index="${index}">×</button>
+            `;
+            imagePreview.appendChild(previewItem);
+            
+            // 添加删除图片事件
+            previewItem.querySelector('.remove-image').addEventListener('click', function() {
+                const cake = cakes.find(c => c.id === currentEditId);
+                if (cake && cake.images) {
+                    cake.images.splice(parseInt(this.getAttribute('data-index')), 1);
+                    saveToLocalStorage();
+                    openEditModal(currentEditId); // 重新打开以刷新预览
+                }
+            });
+        }
+
+        // 获取默认图片
+        function getDefaultImage() {
+                return 'data:image/jpeg;base64,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';
+                }
+
+        // 创建上传卡片
+        function createUploadCard() {
+            const uploadCard = document.createElement('div');
+            uploadCard.className = 'upload-card';
+            uploadCard.innerHTML = `
+                <div class="upload-icon">📸</div>
+                <h3>添加新蛋糕</h3>
+                <p>点击上传您的蛋糕图片，展示给更多顾客</p>
+                <button class="upload-card-btn" onclick="showPasswordModal('upload')">
+                    上传蛋糕图片
+                </button>
+            `;
+            
+            // 点击整个卡片也可以触发上传
+            uploadCard.addEventListener('click', function(e) {
+                if (e.target.classList.contains('upload-card-btn')) return;
+                showPasswordModal('upload');
+            });
+            
+            return uploadCard;
+        }
+
+        // 渲染蛋糕卡片
+        function renderCakes(cakesToRender) {
+            const gallery = document.getElementById('cakeGallery');
+            
+            if (!gallery) return;
+            
+            gallery.innerHTML = '';
+            
+            if (cakesToRender.length === 0) {
+                // 创建空状态卡片，保持网格布局
+                const emptyCard = document.createElement('div');
+                emptyCard.className = 'empty-card';
+                emptyCard.innerHTML = `
+                    <h3>暂无蛋糕展示</h3>
+                    <p>该分类下暂无蛋糕，请尝试其他分类</p>
+                `;
+                gallery.appendChild(emptyCard);
+                
+                // 添加上传卡片
+                const uploadCard = createUploadCard();
+                gallery.appendChild(uploadCard);
+                return;
+            }
+            
+            // 正常渲染蛋糕卡片
+            cakesToRender.forEach(cake => {
+                const cakeCard = document.createElement('div');
+                cakeCard.className = 'cake-card';
+                cakeCard.setAttribute('data-id', cake.id);
+                
+                const mainImage = cake.images && cake.images.length > 0 ? 
+                    cake.images[0] : getDefaultImage();
+                    
+                cakeCard.innerHTML = `
+                    <div class="cake-image-container">
+                        <img src="${mainImage}" alt="${cake.name}" class="cake-image">
+                        ${cake.images && cake.images.length > 1 ? 
+                            `<div class="image-count">${cake.images.length}张图片</div>` : ''}
+                        <div class="view-count">👁️ ${cake.views || 0}</div>
+                        <button class="edit-btn" data-id="${cake.id}">✏️</button>
+                        <button class="delete-btn" data-id="${cake.id}">🗑️</button>
+                    </div>
+                    <div class="cake-info">
+                        <h3 class="cake-name">${cake.name}</h3>
+                        <p class="cake-description">${cake.description}</p>
+                        <p class="cake-price">${cake.price}</p>
+                    </div>
+                `;
+                gallery.appendChild(cakeCard);
+                
+                // 添加事件监听器
+                addCardEventListeners(cakeCard, cake.id);
+            });
+            
+            // 在所有蛋糕卡片后面添加上传卡片
+            const uploadCard = createUploadCard();
+            gallery.appendChild(uploadCard);
+        }
+
+        // 添加卡片事件监听器
+        function addCardEventListeners(cakeCard, cakeId) {
+            // 点击图片放大功能
+            cakeCard.querySelector('.cake-image').addEventListener('click', function() {
+                incrementViewCount(cakeId);
+                openImageModal(cakeId);
+            });
+            
+            // 编辑按钮点击事件
+            cakeCard.querySelector('.edit-btn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                currentEditId = cakeId;
+                showPasswordModal('edit');
+            });
+            
+            // 删除按钮点击事件
+            cakeCard.querySelector('.delete-btn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                currentDeleteId = cakeId;
+                showPasswordModal('delete');
+            });
+        }
+        
+        // 打开图片浏览模态框
+        function openImageModal(cakeId) {
+            const cake = cakes.find(c => c.id === cakeId);
+            if (cake && cake.images && cake.images.length > 0) {
+                currentViewingImages = cake.images;
+                currentImageIndex = 0;
+                updateImageModal();
+                document.getElementById('imageModal').style.display = 'flex';
+            } else {
+                alert('该蛋糕暂无图片可查看');
+            }
+        }
+        
+        // 更新图片浏览模态框
+        function updateImageModal() {
+            if (currentViewingImages.length > 0) {
+                const modalImage = document.getElementById('modalImage');
+                if (modalImage) {
+                    modalImage.src = currentViewingImages[currentImageIndex];
+                }
+                
+                // 更新指示器
+                const imageIndicators = document.getElementById('imageIndicators');
+                if (imageIndicators) {
+                    imageIndicators.innerHTML = '';
+                    currentViewingImages.forEach((_, index) => {
+                        const indicator = document.createElement('div');
+                        indicator.className = `image-indicator ${index === currentImageIndex ? 'active' : ''}`;
+                        indicator.addEventListener('click', () => {
+                            currentImageIndex = index;
+                            updateImageModal();
+                        });
+                        imageIndicators.appendChild(indicator);
+                    });
+                }
+            }
+        }
+
+        // 处理图片上传
+        function handleImageUpload(files, isNewCake) {
+            if (files.length > 0) {
+                const maxImages = 3;
+                const readers = [];
+                const imagesToAdd = [];
+                
+                // 验证文件类型和大小
+                const validFiles = Array.from(files).filter(file => {
+                    if (!file.type.startsWith('image/')) {
+                        alert(`文件 "${file.name}" 不是图片格式`);
+                        return false;
+                    }
+                    if (file.size > 5 * 1024 * 1024) { // 5MB限制
+                        alert(`文件 "${file.name}" 太大，请选择小于5MB的图片`);
+                        return false;
+                    }
+                    return true;
+                });
+                
+                if (validFiles.length === 0) return;
+                
+                for (let i = 0; i < Math.min(validFiles.length, maxImages); i++) {
+                    const reader = new FileReader();
+                    readers.push(reader);
+                    
+                    reader.onload = function(event) {
+                        imagesToAdd.push(event.target.result);
+                        
+                        if (imagesToAdd.length === Math.min(validFiles.length, maxImages)) {
+                            if (isNewCake) {
+                                // 创建新的蛋糕对象
+                                const newCake = {
+                                    id: cakes.length > 0 ? Math.max(...cakes.map(c => c.id)) + 1 : 1,
+                                    name: "自定义蛋糕",
+                                    category: "dessert",
+                                    price: "¥0",
+                                    description: "上传的蛋糕图片",
+                                    images: imagesToAdd,
+                                    views: 0
+                                };
+                                
+                                // 添加到蛋糕数组
+                                cakes.push(newCake);
+                                saveToLocalStorage();
+                                renderCakes(cakes);
+                                if (document.getElementById('imageUpload')) {
+                                    document.getElementById('imageUpload').value = '';
+                                }
+                                // 自动打开编辑模态框
+                                setTimeout(() => {
+                                    currentEditId = newCake.id;
+                                    openEditModal(newCake.id);
+                                }, 300);
+                            } else {
+                                // 添加到现有蛋糕
+                                const cake = cakes.find(c => c.id === currentEditId);
+                                if (cake) {
+                                    if (!cake.images) cake.images = [];
+                                    const remainingSlots = maxImages - cake.images.length;
+                                    if (remainingSlots > 0) {
+                                        cake.images.push(...imagesToAdd.slice(0, remainingSlots));
+                                        saveToLocalStorage();
+                                        openEditModal(currentEditId); // 刷新预览
+                                    } else {
+                                        alert('已达到最大图片数量（3张）');
+                                    }
+                                }
+                                if (document.getElementById('editImageUpload')) {
+                                    document.getElementById('editImageUpload').value = '';
+                                }
+                            }
+                        }
+                    };
+                    reader.onerror = function() {
+                        alert(`读取文件 "${validFiles[i].name}" 失败`);
+                    };
+                    reader.readAsDataURL(validFiles[i]);
+                }
+            }
+        }
+
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化时间显示
+            initDateTime();
+            
+            // 加载数据
+            loadFromLocalStorage();
+            
+            // 获取DOM元素
+            const gallery = document.getElementById('cakeGallery');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const closeModal = document.getElementById('closeModal');
+            const imageUpload = document.getElementById('imageUpload');
+            const editModal = document.getElementById('editModal');
+            const cancelEdit = document.getElementById('cancelEdit');
+            const saveEdit = document.getElementById('saveEdit');
+            const deleteModal = document.getElementById('deleteModal');
+            const cancelDelete = document.getElementById('cancelDelete');
+            const confirmDelete = document.getElementById('confirmDelete');
+            const passwordModal = document.getElementById('passwordModal');
+            const cancelPassword = document.getElementById('cancelPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const prevImage = document.getElementById('prevImage');
+            const nextImage = document.getElementById('nextImage');
+            const imageIndicators = document.getElementById('imageIndicators');
+            const editImageUpload = document.getElementById('editImageUpload');
+
+            // 初始渲染所有蛋糕
+            renderCakes(cakes);
+            
+            // 筛选功能
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有激活状态
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.style.transform = 'scale(1)';
+                        btn.style.boxShadow = 'none';
+                    });
+                    
+                    // 设置当前激活状态
+                    this.classList.add('active');
+                    this.style.transform = 'scale(1.05)';
+                    this.style.boxShadow = '0 4px 12px rgba(255, 205, 210, 0.4)';
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // 添加过渡效果
+                    gallery.style.opacity = '0.7';
+                    gallery.style.transition = 'opacity 0.3s ease';
+                    
+                    setTimeout(() => {
+                        if (filter === 'all') {
+                            renderCakes(cakes);
+                        } else {
+                            const filteredCakes = cakes.filter(cake => cake.category === filter);
+                            renderCakes(filteredCakes);
+                        }
+                        
+                        gallery.style.opacity = '1';
+                    }, 200);
+                });
+            });
+            
+            // 保存编辑
+            saveEdit.addEventListener('click', function() {
+                if (currentEditId !== null) {
+                    const cakeIndex = cakes.findIndex(c => c.id === currentEditId);
+                    if (cakeIndex !== -1) {
+                        const name = document.getElementById('editName').value.trim();
+                        const price = document.getElementById('editPrice').value.trim();
+                        
+                        if (!name) {
+                            alert('请输入蛋糕名称');
+                            return;
+                        }
+                        
+                        if (!price) {
+                            alert('请输入蛋糕价格');
+                            return;
+                        }
+                        
+                        cakes[cakeIndex].name = name;
+                        cakes[cakeIndex].category = document.getElementById('editCategory').value;
+                        cakes[cakeIndex].price = price;
+                        cakes[cakeIndex].description = document.getElementById('editDescription').value.trim();
+                        
+                        saveToLocalStorage();
+                        renderCakes(cakes);
+                        editModal.style.display = 'none';
+                        currentEditId = null;
+                        alert('蛋糕信息已成功更新！');
+                    }
+                }
+            });
+            
+            // 确认删除
+            confirmDelete.addEventListener('click', function() {
+                if (currentDeleteId !== null) {
+                    cakes = cakes.filter(cake => cake.id !== currentDeleteId);
+                    saveToLocalStorage();
+                    renderCakes(cakes);
+                    deleteModal.style.display = 'none';
+                    currentDeleteId = null;
+                    alert('蛋糕已成功删除！');
+                }
+            });
+
+            // 取消编辑
+            cancelEdit.addEventListener('click', function() {
+                editModal.style.display = 'none';
+                currentEditId = null;
+            });
+            
+            // 取消删除
+            cancelDelete.addEventListener('click', function() {
+                deleteModal.style.display = 'none';
+                currentDeleteId = null;
+            });
+            
+            // 取消密码输入
+            cancelPassword.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+                currentAction = null;
+            });
+            
+            // 确认密码
+            confirmPassword.addEventListener('click', verifyPassword);
+            
+            // 图片浏览控制
+            prevImage.addEventListener('click', function() {
+                if (currentViewingImages.length > 0) {
+                    currentImageIndex = (currentImageIndex - 1 + currentViewingImages.length) % currentViewingImages.length;
+                    updateImageModal();
+                }
+            });
+            
+            nextImage.addEventListener('click', function() {
+                if (currentViewingImages.length > 0) {
+                    currentImageIndex = (currentImageIndex + 1) % currentViewingImages.length;
+                    updateImageModal();
+                }
+            });
+
+            // 键盘导航支持
+            document.addEventListener('keydown', function(e) {
+                if (document.getElementById('imageModal').style.display === 'flex') {
+                    if (e.key === 'ArrowLeft') {
+                        prevImage.click();
+                    } else if (e.key === 'ArrowRight') {
+                        nextImage.click();
+                    } else if (e.key === 'Escape') {
+                        closeModal.click();
+                    }
+                }
+            });
+
+            // 触摸滑动支持
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            if (modal) {
+                modal.addEventListener('touchstart', function(e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
+
+                modal.addEventListener('touchend', function(e) {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                });
+            }
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // 向左滑动 - 下一张
+                        nextImage.click();
+                    } else {
+                        // 向右滑动 - 上一张
+                        prevImage.click();
+                    }
+                }
+            }
+            
+            // 关闭模态窗口
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // 点击模态窗口外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // 点击编辑模态窗口外部关闭
+            editModal.addEventListener('click', function(e) {
+                if (e.target === editModal) {
+                    editModal.style.display = 'none';
+                    currentEditId = null;
+                }
+            });
+            
+            // 点击删除模态窗口外部关闭
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    deleteModal.style.display = 'none';
+                    currentDeleteId = null;
+                }
+            });
+            
+            // 点击密码模态窗口外部关闭
+            passwordModal.addEventListener('click', function(e) {
+                if (e.target === passwordModal) {
+                    passwordModal.style.display = 'none';
+                    currentAction = null;
+                }
+            });
+            
+            // 主图片上传功能
+            if (imageUpload) {
+                imageUpload.addEventListener('change', function(e) {
+                    handleImageUpload(e.target.files, true);
+                });
+            }
+            
+            // 编辑图片上传功能
+            if (editImageUpload) {
+                editImageUpload.addEventListener('change', function(e) {
+                    handleImageUpload(e.target.files, false);
+                });
+            }
+
+            // 密码输入框回车支持
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        verifyPassword();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
